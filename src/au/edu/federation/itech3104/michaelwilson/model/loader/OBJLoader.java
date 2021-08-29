@@ -84,14 +84,14 @@ public final class OBJLoader {
 		return model;
 	}
 
-	// f 8/1 7/2 6/3 5/4
+	// f 8/1/1 7/2/3 6/3/1
 	private static void processFace(String[] tokens, List<Vert> vertices, List<Integer> indices) {
-		if (tokens.length == 5)
-			throw new RuntimeException("Failed to load OBJ file! Faces must be made from triangles and not quads!");
+		if (tokens.length > 4)
+			throw new RuntimeException("Failed to load OBJ file! Faces must be made from triangles!");
 
-		String[] vertex1 = tokens[1].split("/");
-		String[] vertex2 = tokens[2].split("/");
-		String[] vertex3 = tokens[3].split("/");
+		String[] vertex1 = tokens[1].trim().split("/");
+		String[] vertex2 = tokens[2].trim().split("/");
+		String[] vertex3 = tokens[3].trim().split("/");
 
 		if (vertex1.length != 3)
 			throw new RuntimeException("Failed to load OBJ file! Models must have normals and texture coordinates!");
@@ -105,9 +105,9 @@ public final class OBJLoader {
 	}
 
 	private static void processVertex(String[] vertexData, List<Vert> vertices, List<Integer> indices) {
-		int index = Integer.parseInt(vertexData[0]) - 1;
-		int textureIndex = Integer.parseInt(vertexData[1]) - 1;
-		int normalIndex = Integer.parseInt(vertexData[2]) - 1;
+		int index = Integer.parseInt(vertexData[0].trim()) - 1;
+		int textureIndex = Integer.parseInt(vertexData[1].trim()) - 1;
+		int normalIndex = Integer.parseInt(vertexData[2].trim()) - 1;
 
 		Vert vertex = vertices.get(index);
 

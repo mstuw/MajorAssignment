@@ -53,6 +53,13 @@ public abstract class Node<T extends Node<T>> implements Iterable<T> {
 		notifyAncestorsTreeChanged(node, added);
 	}
 
+	protected void notifyDescendantsParentChanged() {
+		for (T child : children) {
+			child.onParentChanged();
+			child.notifyDescendantsParentChanged();
+		}
+	}
+
 	protected void notifyAncestorsTreeChanged(T node, boolean added) {
 		if (isRoot())
 			return;
@@ -74,6 +81,7 @@ public abstract class Node<T extends Node<T>> implements Iterable<T> {
 	 */
 	public void setParent(T value) {
 
+		// SuppressWarnings: This object should always be T since T extends Node<T>
 		if (parent != null && parent != value) {
 			@SuppressWarnings("unchecked")
 			T node = (T) this;
@@ -93,6 +101,7 @@ public abstract class Node<T extends Node<T>> implements Iterable<T> {
 
 		parent = value;
 		onParentChanged();
+		notifyDescendantsParentChanged();
 	}
 
 	public int getChildCount() {
@@ -136,14 +145,14 @@ public abstract class Node<T extends Node<T>> implements Iterable<T> {
 
 	/**
 	 * For the specified node and all descendants, invoke the
-	 * {@link IDisposable#dispose() dispose()} method on any node that implements the
-	 * {@link IDisposable} interface.
+	 * {@link IDisposable#dispose() dispose()} method on any node that implements
+	 * the {@link IDisposable} interface.
 	 */
-	public static <T extends Node<T>> void dispose(Node<T> obj) {
-		if (obj instanceof IDisposable)
-			((IDisposable) obj).dispose();
+	public static <T extends Node<T>> void dispose(Node<T> node) {
+		if (node instanceof IDisposable)
+			((IDisposable) node).dispose();
 
-		for (T child : obj.children)
+		for (T child : node)
 			dispose(child);
 	}
 

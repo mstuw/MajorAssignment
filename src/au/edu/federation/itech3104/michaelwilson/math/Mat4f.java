@@ -52,6 +52,8 @@ public class Mat4f {
 
 	// ---------- Public Properties ---------
 
+	public static final Mat4f IDENTITY = new Mat4f(1.0f);
+
 	// These properties are deliberately declared as public for fast access without
 	// the need
 	// to use getters and setters.
@@ -175,13 +177,19 @@ public class Mat4f {
 	/**
 	 * Returns a scaled matrix of this instance.
 	 */
-	public Mat4f scale(float x, float y, float z) {
+	public Mat4f scaleNew(float x, float y, float z) {
 		return times(scaleMatrix(x, y, z));
 	}
 
-	/**
-	 * Returns a scaled matrix of this instance.
-	 */
+	public Mat4f scale(float x, float y, float z) {
+		setFromArray(scaleNew(x, y, z).toArray());
+		return this;
+	}
+
+	public Mat4f scale(float s) {
+		return scale(s, s, s);
+	}
+
 	public Mat4f scale(Vec3f vec) {
 		return scale(vec.x, vec.y, vec.z);
 	}

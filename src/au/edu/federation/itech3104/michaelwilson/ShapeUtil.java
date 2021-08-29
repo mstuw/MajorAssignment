@@ -47,7 +47,10 @@ public final class ShapeUtil {
 	// @formatter:on
 
 	//@formatter:off
-	/** Count: 36 */
+	/** 
+	 * Count: 36<br>
+	 * VBL: 3_3_2 
+	 */
 	public static final float[] CUBE_VERTICES_NOT_INDEXED = {
 			// positions          // normals           // uv
 	        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,

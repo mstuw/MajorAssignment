@@ -36,6 +36,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -44,9 +45,10 @@ import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GLContext;
 
 import au.edu.federation.itech3104.michaelwilson.camera.Camera;
-import au.edu.federation.itech3104.michaelwilson.graph.Object3D;
-import au.edu.federation.itech3104.michaelwilson.graph.RootNode;
+import au.edu.federation.itech3104.michaelwilson.graph.LightTrackingTransform;
+import au.edu.federation.itech3104.michaelwilson.graph.Transform;
 import au.edu.federation.itech3104.michaelwilson.graphics.IDisposable;
+import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IRenderer;
 
 public abstract class Engine implements IDisposable, AutoCloseable {
 
@@ -56,12 +58,16 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 
 	protected final ResourceManager resourceManager = new ResourceManager();
 
-	protected final RootNode root = new RootNode(); // The scene graph root.
+	protected final Transform root = new LightTrackingTransform(); // The scene graph root.
 
 	protected final Camera camera;
 
-	public Engine(String title, int windowWidth, int windowHeight, Camera camera) {
+	private final IRenderer renderer;
+
+	public Engine(String title, int windowWidth, int windowHeight, Camera camera, IRenderer renderer) {
 		this.camera = camera;
+		this.renderer = renderer;
+		this.renderer.setCamera(camera);
 
 		glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
 
@@ -106,10 +112,13 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 			}
 		});
 
-
 		glfwSwapInterval(1);
 		glfwShowWindow(windowHandle);
 	}
+
+	protected abstract void initResources() throws IOException;
+
+	protected abstract void initScene();
 
 	/**
 	 * Separate update method not associated with the scene graph. Called before the
@@ -123,11 +132,16 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 	 * Separate draw method not associated with the scene graph. Called before the
 	 * scene graph.
 	 */
-	protected void draw() {
+	protected void draw(IRenderer renderer) {
 
 	}
 
-	public void run() {
+	public void run() throws IOException {
+		resourceManager.dispose();
+		
+		initResources();
+		initScene();
+
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -143,10 +157,10 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			update(deltaTime);
-			draw();
-			
-			root.updateAll(deltaTime);
-			root.drawAll(camera, root);
+			draw(renderer);
+
+			// root.updateAll(deltaTime);
+			renderer.draw(root);
 
 			glfwSwapBuffers(windowHandle);
 			glfwPollEvents();
@@ -160,7 +174,7 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 
 		errorCallback.release();
 
-		Object3D.dispose(root);
+		Transform.dispose(root);
 
 		resourceManager.dispose();
 

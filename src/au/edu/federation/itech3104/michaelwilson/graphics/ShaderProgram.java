@@ -197,6 +197,10 @@ public class ShaderProgram implements IBindable, IDisposable {
 		setUniform("viewPos", camera.getPosition());
 	}
 
+	public void setModelMatrix(Mat4f modelMatrix) {
+		setUniform("model", modelMatrix);
+	}
+
 	/**
 	 * Return the cached uniform location or get uniform location if it wasn't
 	 * already cached.

@@ -24,7 +24,7 @@ public class Material {
 	private final List<TextureAttribute> textures = new ArrayList<>();
 
 	private boolean isLightingSupported;
-	
+
 	/**
 	 * Create a new Material. This Material will not take ownership of the provided
 	 * shader program.
@@ -46,7 +46,6 @@ public class Material {
 	public Material copy() {
 		return new Material(this);
 	}
-
 
 	public Material addAttribute(String name, Mat4f value) {
 		attributes.put(name, new Mat4fAttribute(name, value));
@@ -76,7 +75,7 @@ public class Material {
 	public MaterialAttribute getAttribute(String name) {
 		return attributes.get(name);
 	}
-	
+
 	public Collection<MaterialAttribute> getAttributes() {
 		return attributes.values();
 	}

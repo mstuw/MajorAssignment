@@ -3,7 +3,7 @@ package au.edu.federation.itech3104.michaelwilson.lighting;
 import au.edu.federation.itech3104.michaelwilson.graphics.ShaderProgram;
 import au.edu.federation.itech3104.michaelwilson.math.Vec3f;
 
-public class PointLight extends Light {
+public class PointLight extends PositionalLight {
 
 	private float constant;
 	private float linear;
@@ -18,6 +18,7 @@ public class PointLight extends Light {
 
 	@Override
 	protected void set(String elementName, ShaderProgram shader) {	
+		super.set(elementName, shader);
 		shader.setUniform(join(elementName, "constant"), constant);
 		shader.setUniform(join(elementName, "linear"), linear);
 		shader.setUniform(join(elementName, "quadratic"), quadratic);

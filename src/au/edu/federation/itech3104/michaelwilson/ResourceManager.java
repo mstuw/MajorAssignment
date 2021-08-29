@@ -39,6 +39,7 @@ public class ResourceManager implements IDisposable {
 	 * {@link Mesh#Mesh(float[], int[], BufferUsageHint, VertexBufferLayout, Material)}.
 	 *
 	 * @param material the material name, see {@link #getMaterial(String)}
+	 * @return the mesh, or null if the mesh name is already used.
 	 */
 	public Mesh loadMesh(String name, float[] vertices, int[] indices, BufferUsageHint usageHint, VertexBufferLayout layout, String material) {
 		return loadMesh(name, vertices, indices, usageHint, layout, getMaterial(material));
@@ -49,10 +50,12 @@ public class ResourceManager implements IDisposable {
 	 * retrieved and disposed of automatically. This method is equivalent to the
 	 * constructor
 	 * {@link Mesh#Mesh(float[], int[], BufferUsageHint, VertexBufferLayout, Material)}.
+	 * 
+	 * @return the mesh, or null if the mesh name is already used.
 	 */
 	public Mesh loadMesh(String name, float[] vertices, int[] indices, BufferUsageHint usageHint, VertexBufferLayout layout, Material material) {
 		if (meshes.containsKey(name))
-			throw new IllegalArgumentException("That mesh name is already loaded! " + name);
+			return null;
 
 		Mesh mesh = new Mesh(vertices, indices, usageHint, layout, material);
 		meshes.put(name, mesh);
@@ -66,9 +69,18 @@ public class ResourceManager implements IDisposable {
 	 * {@link Mesh#Mesh(float[], int, BufferUsageHint, VertexBufferLayout, Material)}.
 	 * 
 	 * @param material the material name, see {@link #getMaterial(String)}
+	 * @return the mesh, or null if the mesh name is already used.
 	 */
 	public Mesh loadMesh(String name, float[] vertices, int count, BufferUsageHint usageHint, VertexBufferLayout layout, String material) {
 		return loadMesh(name, vertices, count, usageHint, layout, getMaterial(material));
+	}
+
+	public Mesh addMesh(String name, Mesh mesh) {
+		if (meshes.containsKey(name))
+			return null;
+
+		meshes.put(name, mesh);
+		return mesh;
 	}
 
 	/**
@@ -79,7 +91,7 @@ public class ResourceManager implements IDisposable {
 	 */
 	public Mesh loadMesh(String name, float[] vertices, int count, BufferUsageHint usageHint, VertexBufferLayout layout, Material material) {
 		if (meshes.containsKey(name))
-			throw new IllegalArgumentException("That mesh name is already loaded! " + name);
+			return null;
 
 		Mesh mesh = new Mesh(vertices, count, usageHint, layout, material);
 		meshes.put(name, mesh);
@@ -88,7 +100,7 @@ public class ResourceManager implements IDisposable {
 
 	public Material loadMaterial(String name, String shaderName) {
 		if (materials.containsKey(name))
-			throw new IllegalArgumentException("That material name is already loaded! " + name);
+			return null;
 
 		ShaderProgram shader = getShader(shaderName);
 		if (shader == null)
@@ -97,6 +109,14 @@ public class ResourceManager implements IDisposable {
 		Material mat = new Material(shader);
 		materials.put(name, mat);
 		return mat;
+	}
+
+	public Material addMaterial(String name, Material material) {
+		if (materials.containsKey(name))
+			return null;
+
+		materials.put(name, material);
+		return material;
 	}
 
 	/**

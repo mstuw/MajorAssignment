@@ -3,6 +3,11 @@ package au.edu.federation.itech3104.michaelwilson.model.loader;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.federation.itech3104.michaelwilson.graphics.Mesh;
+import au.edu.federation.itech3104.michaelwilson.graphics.data.BufferUsageHint;
+import au.edu.federation.itech3104.michaelwilson.graphics.data.VertexBufferLayout;
+import au.edu.federation.itech3104.michaelwilson.graphics.material.Material;
+
 public final class RawMesh {
 	public final List<Vertex> vertices = new ArrayList<>();
 	public final List<Integer> indices = new ArrayList<>();
@@ -10,6 +15,16 @@ public final class RawMesh {
 	protected RawMesh() {
 	}
 
+	/**
+	 * Returns a new {@link Mesh} object using data from this {@link RawMesh}. Caller is responsible for disposing returned {@link Mesh}.
+	 */
+	public Mesh toMesh(Material material, BufferUsageHint usageHint) {
+		return new Mesh(getVertices(), getIndices(), usageHint, VertexBufferLayout.Float3_3_2, material);
+	}
+
+	/**
+	 * Returns a new integer array of mesh indices.
+	 */
 	public int[] getIndices() {
 		int[] arr = new int[indices.size()];
 
@@ -19,6 +34,10 @@ public final class RawMesh {
 		return arr;
 	}
 
+	/**
+	 * Returns a new array of mesh vertices that contains float groups of
+	 * ([position: x, y, z], [normal: x, y, z], [texture: u, v])
+	 */
 	public float[] getVertices() {
 
 		float[] arr = new float[vertices.size() * 8]; // vec3, vec3, vec2
