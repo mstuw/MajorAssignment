@@ -3,7 +3,12 @@ package au.edu.federation.itech3104.michaelwilson.lighting;
 import au.edu.federation.itech3104.michaelwilson.graphics.ShaderProgram;
 import au.edu.federation.itech3104.michaelwilson.math.Vec3f;
 
-public class DirectionalLight extends PositionalLight {
+/**
+ * A directional light source, similar to sunlight. The light source is
+ * considered to be infinitely far away, so all light rays are considered to be
+ * parallel to one another.
+ */
+public class DirectionalLight extends Light {
 
 	private final Vec3f direction;
 
@@ -14,7 +19,6 @@ public class DirectionalLight extends PositionalLight {
 
 	@Override
 	protected void set(String elementName, ShaderProgram shader) {
-		super.set(elementName, shader);
 		shader.setUniform(join(elementName, "direction"), direction);
 	}
 

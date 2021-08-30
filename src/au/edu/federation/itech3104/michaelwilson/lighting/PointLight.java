@@ -3,6 +3,11 @@ package au.edu.federation.itech3104.michaelwilson.lighting;
 import au.edu.federation.itech3104.michaelwilson.graphics.ShaderProgram;
 import au.edu.federation.itech3104.michaelwilson.math.Vec3f;
 
+/**
+ * Represents a light source that emits light in a sphere at a specific
+ * location, the light will attenuate the further it gets from the light source.
+ * (e.g. a light bulb)
+ */
 public class PointLight extends PositionalLight {
 
 	private float constant;
@@ -17,7 +22,7 @@ public class PointLight extends PositionalLight {
 	}
 
 	@Override
-	protected void set(String elementName, ShaderProgram shader) {	
+	protected void set(String elementName, ShaderProgram shader) {
 		super.set(elementName, shader);
 		shader.setUniform(join(elementName, "constant"), constant);
 		shader.setUniform(join(elementName, "linear"), linear);

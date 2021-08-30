@@ -5,6 +5,11 @@ import au.edu.federation.itech3104.michaelwilson.graphics.ILight;
 import au.edu.federation.itech3104.michaelwilson.graphics.ShaderProgram;
 import au.edu.federation.itech3104.michaelwilson.math.Vec3f;
 
+/**
+ * A base class for all light sources. Provides ambient, diffuse, and specular
+ * components. Includes the required {@link ILight implementation} needed to
+ * update any {@link ShaderProgram} of this light source.
+ */
 public abstract class Light extends Transform implements ILight {
 	private static final String UNIFORM_DELIMITER = ".";
 

@@ -28,10 +28,6 @@ public class ResourceManager implements IDisposable {
 
 	private final Map<String, Material> materials = new HashMap<String, Material>();
 
-	public ResourceManager() {
-
-	}
-
 	/**
 	 * Create a Mesh object and store it in this resource manager, so it can be
 	 * retrieved and disposed of automatically. This method is equivalent to the
@@ -79,7 +75,7 @@ public class ResourceManager implements IDisposable {
 	 * Add the provided mesh to this {@link ResourceManager}, so it can be retrieved
 	 * and disposed of automatically.
 	 * 
-	 * @return the provided mesh, or null is the mesh name is already used.
+	 * @return the provided mesh, or null if the mesh name is already used.
 	 */
 	public Mesh addMesh(String name, Mesh mesh) {
 		if (meshes.containsKey(name))
@@ -94,6 +90,8 @@ public class ResourceManager implements IDisposable {
 	 * retrieved and disposed of automatically. This method is equivalent to the
 	 * constructor
 	 * {@link Mesh#Mesh(float[], int, BufferUsageHint, VertexBufferLayout, Material)}.
+	 * 
+	 * @return the provided mesh, or null if the mesh name is already used.
 	 */
 	public Mesh addMesh(String name, float[] vertices, int count, BufferUsageHint usageHint, VertexBufferLayout layout, Material material) {
 		if (meshes.containsKey(name))
@@ -104,19 +102,12 @@ public class ResourceManager implements IDisposable {
 		return mesh;
 	}
 
-	public Material loadMaterial(String name, String shaderName) {
-		if (materials.containsKey(name))
-			return null;
-
-		ShaderProgram shader = getShader(shaderName);
-		if (shader == null)
-			throw new IllegalArgumentException("Unknown shader " + name + " when loading material!" + name);
-
-		Material mat = new Material(shader);
-		materials.put(name, mat);
-		return mat;
-	}
-
+	/**
+	 * Add the provided {@link Material} to this {@link ResourceManager}, so it can
+	 * be retrieved.
+	 * 
+	 * @return the provided material, or null if the material name is already used.
+	 */
 	public Material addMaterial(String name, Material material) {
 		if (materials.containsKey(name))
 			return null;

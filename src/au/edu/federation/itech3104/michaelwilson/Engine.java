@@ -51,9 +51,10 @@ import au.edu.federation.itech3104.michaelwilson.graphics.IDisposable;
 import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IDrawableRenderer;
 import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IRenderer;
 
+// The base of the application. Setup GLFW and OpenGL, handle gameloop and disposing of resources.
 public abstract class Engine implements IDisposable, AutoCloseable {
 
-	protected final long windowHandle;
+	protected final long windowHandle; // the glfw window handle.
 
 	private final GLFWErrorCallback errorCallback;
 
@@ -113,7 +114,7 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 			}
 		});
 
-		glfwSwapInterval(1);
+		glfwSwapInterval(1); // v-sync on
 		glfwShowWindow(windowHandle);
 	}
 
@@ -134,12 +135,10 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 	 * scene graph.
 	 */
 	protected void draw(IDrawableRenderer renderer) {
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	public void run() throws IOException {
-		resourceManager.dispose();
-		
 		initResources();
 		initScene();
 
@@ -155,12 +154,9 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 			float deltaTime = (float) (glfwGetTime() - lastTime); // using float since we use Vec3f most often.
 			lastTime = glfwGetTime();
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 			update(deltaTime);
 			draw(renderer);
 
-			// root.updateAll(deltaTime);
 			renderer.renderTree(root);
 
 			glfwSwapBuffers(windowHandle);
@@ -175,7 +171,8 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 
 		errorCallback.release();
 
-		Transform.dispose(root);
+		Transform.dispose(root); // Dispose all descendant nodes within the root node that implement the
+									// IDisposable interface.
 
 		resourceManager.dispose();
 

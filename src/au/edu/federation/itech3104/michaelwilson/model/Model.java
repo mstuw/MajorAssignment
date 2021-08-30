@@ -10,6 +10,15 @@ import au.edu.federation.itech3104.michaelwilson.graphics.material.Material;
 import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IDrawable;
 import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IDrawableRenderer;
 
+/**
+ * The {@link Model} class represents a 3D model in a scene graph. The class
+ * supports multiple non-hierarchical meshes. It extends the
+ * {@link Transform} class allowing it to have ancestors and descendants.
+ * 
+ * @see Transform
+ * @see Mesh
+ * @see IDrawable
+ */
 public class Model extends Transform implements IDrawable, IDisposable {
 
 	private final List<Mesh> meshes;
@@ -26,7 +35,7 @@ public class Model extends Transform implements IDrawable, IDisposable {
 
 	@Override
 	public Material getMaterial() {
-		return null;
+		return null; // return null, draw will be called without material/shader setup, instead it will happen when each mesh is rendered.
 	}
 
 	public List<Mesh> getMeshes() {

@@ -10,7 +10,6 @@ import au.edu.federation.itech3104.michaelwilson.ResourceManager;
 import au.edu.federation.itech3104.michaelwilson.graphics.Mesh;
 import au.edu.federation.itech3104.michaelwilson.graphics.data.BufferUsageHint;
 import au.edu.federation.itech3104.michaelwilson.graphics.material.Material;
-import au.edu.federation.itech3104.michaelwilson.model.Model;
 
 public final class RawModel {
 
