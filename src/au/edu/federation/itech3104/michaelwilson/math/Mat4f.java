@@ -181,6 +181,10 @@ public class Mat4f {
 		return times(scaleMatrix(x, y, z));
 	}
 
+	public Mat4f scaleNew(float s) {
+		return scaleNew(s, s, s);
+	}
+
 	public Mat4f scale(float x, float y, float z) {
 		setFromArray(scaleNew(x, y, z).toArray());
 		return this;

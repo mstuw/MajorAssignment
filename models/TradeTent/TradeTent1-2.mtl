@@ -10,7 +10,7 @@ Ke 0.0 0.0 0.0
 Ni 1.500000
 d 1.000000
 illum 1
-map_Kd -s 0.000000 0.000000 0.000000 TradeTent1.fbm\\Flag.tga
+map_Kd -s 0.000000 0.000000 0.000000 textures\\Flag.tga
 
 newmtl Metal
 Ns 10.000002
@@ -21,7 +21,7 @@ Ke 0.0 0.0 0.0
 Ni 1.500000
 d 1.000000
 illum 1
-map_Kd -s 0.000000 0.000000 0.000000 TradeTent1.fbm\\Metal.tga
+map_Kd -s 0.000000 0.000000 0.000000 textures\\Metal.tga
 
 newmtl Wood1
 Ns 10.000002
@@ -32,7 +32,7 @@ Ke 0.0 0.0 0.0
 Ni 1.500000
 d 1.000000
 illum 1
-map_Kd -s 0.000000 0.000000 0.000000 TradeTent1.fbm\\Wood1.tga
+map_Kd -s 0.000000 0.000000 0.000000 textures\\Wood1.tga
 
 newmtl Wood2
 Ns 10.000002
@@ -43,4 +43,4 @@ Ke 0.0 0.0 0.0
 Ni 1.500000
 d 1.000000
 illum 1
-map_Kd -s 0.000000 0.000000 0.000000 TradeTent1.fbm\\Wood.tga
+map_Kd -s 0.000000 0.000000 0.000000 textures\\Wood.tga

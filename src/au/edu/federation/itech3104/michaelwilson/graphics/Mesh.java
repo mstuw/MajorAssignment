@@ -11,6 +11,8 @@ import au.edu.federation.itech3104.michaelwilson.graphics.data.VertexArray;
 import au.edu.federation.itech3104.michaelwilson.graphics.data.VertexBuffer;
 import au.edu.federation.itech3104.michaelwilson.graphics.data.VertexBufferLayout;
 import au.edu.federation.itech3104.michaelwilson.graphics.material.Material;
+import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IDrawable;
+import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IDrawableRenderer;
 
 public class Mesh implements IDisposable, IDrawable {
 
@@ -50,7 +52,7 @@ public class Mesh implements IDisposable, IDrawable {
 	 * Draw mesh.
 	 */
 	@Override
-	public void draw() {
+	public void draw(IDrawableRenderer renderer) {
 		vao.bind();
 		{
 			if (isIndexed) {

@@ -1,4 +1,6 @@
-
 Low poly Windmill from sketchfab.com
 
 https://sketchfab.com/3d-models/low-poly-windmill-7e16ed658d92416e9faae0ad91059e92
+
+
+Windmill_Split.obj - modified: split object into separate sub-meshes.

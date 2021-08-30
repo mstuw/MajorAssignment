@@ -9,11 +9,24 @@ import java.util.List;
 
 import au.edu.federation.itech3104.michaelwilson.math.Vec3f;
 
-// TODO: Add support for multiple sub-meshes (objects?)
+// OBJ File format specification referenced from
+// - https://en.wikipedia.org/wiki/Wavefront_.obj_file
+// - https://all3dp.com/1/obj-file-format-3d-printing-cad/#the-obj-file-format-specification-simplified
+
 // TODO: Add support for using MTL files.
 public final class OBJLoader {
+	public static final OBJLoader INSTANCE = new OBJLoader();
 
-	private OBJLoader() {
+	private String currentMaterialName = null;
+	private String currentObjectName = null;
+
+	private final List<Vert> vertices = new ArrayList<>();
+	private final List<UV> textures = new ArrayList<>();
+	private final List<Vec3f> normals = new ArrayList<>();
+
+	private final List<Integer> indices = new ArrayList<>();
+
+	public OBJLoader() {
 	}
 
 	/**
@@ -21,12 +34,8 @@ public final class OBJLoader {
 	 * Currently this method only supports a single mesh/object within the OBJ file.
 	 * The OBJ file must use both normals and texture coordinates.
 	 */
-	public static RawMesh loadMesh(String filepath) throws FileNotFoundException, IOException {
-		List<Vert> vertices = new ArrayList<Vert>();
-		List<UV> textures = new ArrayList<UV>();
-		List<Vec3f> normals = new ArrayList<Vec3f>();
-
-		List<Integer> indices = new ArrayList<Integer>();
+	public RawModel loadModel(String filepath) throws FileNotFoundException, IOException {
+		List<RawMesh> meshes = new ArrayList<>();
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
 
@@ -48,44 +57,78 @@ public final class OBJLoader {
 					normals.add(normal);
 
 				} else if (line.startsWith("f ")) { // faces
-					processFace(tokens, vertices, indices);
+					processFace(tokens);
 
 				} else if (line.startsWith("mtllib ")) { // Material Template Library file
+					// Not supported yet.
 
-				} else if (line.startsWith("usemtrl ")) { // Use a mtl definition
+				} else if (line.startsWith("usemtl ")) { // Use a mtl definition
+					// usemtl doesn't work like expected for OBJ files.
+					// Currently the usemtl command will only work for each object and not
+					// individual f face commands.
+					String name = line.substring(7).trim();
+					currentMaterialName = name;
 
 				} else if (line.startsWith("o ")) { // named objects
+					String name = line.substring(2).trim();
+
+					if (currentObjectName != null) // Switching object names, build the current mesh.
+						meshes.add(buildMesh());
+
+					currentObjectName = name;
 
 				} else if (line.startsWith("g ")) { // polygon groups
-
+					// Not supported yet.
 				} else if (line.startsWith("s ")) { // smooth groups
-
+					// Not supported yet.
 				}
-
 			}
-
 		}
 
-		RawMesh model = new RawMesh();
+		meshes.add(buildMesh());
+
+		System.out.println("##### OBJ Load Summary #####");
+		for (RawMesh m : meshes) {
+			System.out.println("- Submesh: " + m.getName());
+			System.out.println("  - material: " + m.getMaterialName());
+			System.out.println("  - vertices: " + m.getVertices().size());
+			System.out.println("  - indices:  " + m.getIndices().size() + "\n");
+		}
+
+		vertices.clear();
+		textures.clear();
+		normals.clear();
+		indices.clear();
+
+		currentMaterialName = null;
+		currentObjectName = null;
+
+		return new RawModel(meshes);
+	}
+
+	private RawMesh buildMesh() {
+		RawMesh model = new RawMesh(currentObjectName, currentMaterialName);
 
 		// Build our Vertex objects based on the Vert objects.
 		for (Vert vertex : vertices) {
-
 			Vec3f position = vertex.getPosition();
 			Vec3f normal = normals.get(vertex.getNormalIndex());
 			UV texture = textures.get(vertex.getTextureIndex());
 
-			model.vertices.add(new Vertex(position, normal, texture));
+			model.getVertices().add(new Vertex(position, normal, texture));
 		}
 
 		for (Integer index : indices)
-			model.indices.add(index);
+			model.getIndices().add(index);
+
+		// clear indices for next sub-mesh.
+		indices.clear();
 
 		return model;
 	}
 
 	// f 8/1/1 7/2/3 6/3/1
-	private static void processFace(String[] tokens, List<Vert> vertices, List<Integer> indices) {
+	private void processFace(String[] tokens) {
 		if (tokens.length > 4)
 			throw new RuntimeException("Failed to load OBJ file! Faces must be made from triangles!");
 
@@ -99,12 +142,12 @@ public final class OBJLoader {
 		if (vertex1.length != vertex2.length || vertex2.length != vertex3.length)
 			throw new RuntimeException("Failed to load OBJ file! All face defintions must be consistent!");
 
-		processVertex(vertex1, vertices, indices);
-		processVertex(vertex2, vertices, indices);
-		processVertex(vertex3, vertices, indices);
+		processVertex(vertex1);
+		processVertex(vertex2);
+		processVertex(vertex3);
 	}
 
-	private static void processVertex(String[] vertexData, List<Vert> vertices, List<Integer> indices) {
+	private void processVertex(String[] vertexData) {
 		int index = Integer.parseInt(vertexData[0].trim()) - 1;
 		int textureIndex = Integer.parseInt(vertexData[1].trim()) - 1;
 		int normalIndex = Integer.parseInt(vertexData[2].trim()) - 1;
@@ -115,13 +158,13 @@ public final class OBJLoader {
 			vertex.set(normalIndex, textureIndex);
 			indices.add(index);
 
-		} else {
-			processSetVertex(vertex, normalIndex, textureIndex, vertices, indices);
+		} else { // the vertex is already set, reuse the same vertex position, normals and textures might be different.
+			processSetVertex(vertex, normalIndex, textureIndex);
 		}
 
 	}
 
-	private static void processSetVertex(Vert vertex, int normalIndex, int textureIndex, List<Vert> vertices, List<Integer> indices) {
+	private void processSetVertex(Vert vertex, int normalIndex, int textureIndex) {
 
 		// Face reusing the same vertex.
 		if (vertex.getNormalIndex() == normalIndex && vertex.getTextureIndex() == textureIndex) {
@@ -135,7 +178,7 @@ public final class OBJLoader {
 			// and texture values.
 			Vert duplicateVertex = vertex.getDuplicateVertex();
 			if (duplicateVertex != null) {
-				processSetVertex(duplicateVertex, normalIndex, textureIndex, vertices, indices);
+				processSetVertex(duplicateVertex, normalIndex, textureIndex);
 
 			} else {
 				Vert newDuplicateVertex = new Vert(vertices.size(), vertex.getPosition());
@@ -153,14 +196,14 @@ public final class OBJLoader {
 	}
 
 	private static final class Vert {
-		private final int index;
+		private final int index; // the index in the vertices list.
 
 		private final Vec3f position;
 
 		private int normalIndex;
 		private int textureIndex; // uv
 
-		private boolean isSet;
+		private boolean isSet; // true if this vert has been used in a face already.
 
 		private Vert duplicateVertex; // a vertex that is based on this one and has the same position.
 

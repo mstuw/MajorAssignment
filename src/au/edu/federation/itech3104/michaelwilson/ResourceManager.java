@@ -41,8 +41,8 @@ public class ResourceManager implements IDisposable {
 	 * @param material the material name, see {@link #getMaterial(String)}
 	 * @return the mesh, or null if the mesh name is already used.
 	 */
-	public Mesh loadMesh(String name, float[] vertices, int[] indices, BufferUsageHint usageHint, VertexBufferLayout layout, String material) {
-		return loadMesh(name, vertices, indices, usageHint, layout, getMaterial(material));
+	public Mesh addMesh(String name, float[] vertices, int[] indices, BufferUsageHint usageHint, VertexBufferLayout layout, String material) {
+		return addMesh(name, vertices, indices, usageHint, layout, getMaterial(material));
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class ResourceManager implements IDisposable {
 	 * 
 	 * @return the mesh, or null if the mesh name is already used.
 	 */
-	public Mesh loadMesh(String name, float[] vertices, int[] indices, BufferUsageHint usageHint, VertexBufferLayout layout, Material material) {
+	public Mesh addMesh(String name, float[] vertices, int[] indices, BufferUsageHint usageHint, VertexBufferLayout layout, Material material) {
 		if (meshes.containsKey(name))
 			return null;
 
@@ -71,10 +71,16 @@ public class ResourceManager implements IDisposable {
 	 * @param material the material name, see {@link #getMaterial(String)}
 	 * @return the mesh, or null if the mesh name is already used.
 	 */
-	public Mesh loadMesh(String name, float[] vertices, int count, BufferUsageHint usageHint, VertexBufferLayout layout, String material) {
-		return loadMesh(name, vertices, count, usageHint, layout, getMaterial(material));
+	public Mesh addMesh(String name, float[] vertices, int count, BufferUsageHint usageHint, VertexBufferLayout layout, String material) {
+		return addMesh(name, vertices, count, usageHint, layout, getMaterial(material));
 	}
 
+	/**
+	 * Add the provided mesh to this {@link ResourceManager}, so it can be retrieved
+	 * and disposed of automatically.
+	 * 
+	 * @return the provided mesh, or null is the mesh name is already used.
+	 */
 	public Mesh addMesh(String name, Mesh mesh) {
 		if (meshes.containsKey(name))
 			return null;
@@ -89,7 +95,7 @@ public class ResourceManager implements IDisposable {
 	 * constructor
 	 * {@link Mesh#Mesh(float[], int, BufferUsageHint, VertexBufferLayout, Material)}.
 	 */
-	public Mesh loadMesh(String name, float[] vertices, int count, BufferUsageHint usageHint, VertexBufferLayout layout, Material material) {
+	public Mesh addMesh(String name, float[] vertices, int count, BufferUsageHint usageHint, VertexBufferLayout layout, Material material) {
 		if (meshes.containsKey(name))
 			return null;
 

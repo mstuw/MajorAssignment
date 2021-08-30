@@ -48,6 +48,7 @@ import au.edu.federation.itech3104.michaelwilson.camera.Camera;
 import au.edu.federation.itech3104.michaelwilson.graph.LightTrackingTransform;
 import au.edu.federation.itech3104.michaelwilson.graph.Transform;
 import au.edu.federation.itech3104.michaelwilson.graphics.IDisposable;
+import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IDrawableRenderer;
 import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IRenderer;
 
 public abstract class Engine implements IDisposable, AutoCloseable {
@@ -132,7 +133,7 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 	 * Separate draw method not associated with the scene graph. Called before the
 	 * scene graph.
 	 */
-	protected void draw(IRenderer renderer) {
+	protected void draw(IDrawableRenderer renderer) {
 
 	}
 
@@ -160,7 +161,7 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 			draw(renderer);
 
 			// root.updateAll(deltaTime);
-			renderer.draw(root);
+			renderer.renderTree(root);
 
 			glfwSwapBuffers(windowHandle);
 			glfwPollEvents();

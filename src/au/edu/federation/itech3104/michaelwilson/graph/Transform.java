@@ -27,7 +27,7 @@ public class Transform extends Node<Transform> {
 	 * ancestor nodes. Must be called whenever the local matrix is modified.
 	 */
 	public void updateGlobalMatrix() {
-		Mat4f parentMatrix = isRoot() ? new Mat4f(1.0f) : getParent().globalMatrix;
+		Mat4f parentMatrix = isRoot() ? new Mat4f(1.0f) : getParent().getGlobalMatrix();
 
 		globalMatrix = parentMatrix.times(localMatrix);
 

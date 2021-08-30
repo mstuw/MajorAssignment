@@ -9,23 +9,29 @@ import au.edu.federation.itech3104.michaelwilson.graphics.data.VertexBufferLayou
 import au.edu.federation.itech3104.michaelwilson.graphics.material.Material;
 
 public final class RawMesh {
-	public final List<Vertex> vertices = new ArrayList<>();
-	public final List<Integer> indices = new ArrayList<>();
+	private final List<Vertex> vertices = new ArrayList<>();
+	private final List<Integer> indices = new ArrayList<>();
 
-	protected RawMesh() {
+	private final String materialName;
+	private final String name;
+
+	protected RawMesh(String name, String materialName) {
+		this.name = name;
+		this.materialName = materialName;
 	}
 
 	/**
-	 * Returns a new {@link Mesh} object using data from this {@link RawMesh}. Caller is responsible for disposing returned {@link Mesh}.
+	 * Returns a new {@link Mesh} object using data from this {@link RawMesh}.
+	 * Caller is responsible for disposing returned {@link Mesh}.
 	 */
 	public Mesh toMesh(Material material, BufferUsageHint usageHint) {
-		return new Mesh(getVertices(), getIndices(), usageHint, VertexBufferLayout.Float3_3_2, material);
+		return new Mesh(getVerticesArray(), getIndicesArray(), usageHint, VertexBufferLayout.Float3_3_2, material);
 	}
 
 	/**
 	 * Returns a new integer array of mesh indices.
 	 */
-	public int[] getIndices() {
+	public int[] getIndicesArray() {
 		int[] arr = new int[indices.size()];
 
 		for (int i = 0; i < arr.length; i++)
@@ -38,7 +44,7 @@ public final class RawMesh {
 	 * Returns a new array of mesh vertices that contains float groups of
 	 * ([position: x, y, z], [normal: x, y, z], [texture: u, v])
 	 */
-	public float[] getVertices() {
+	public float[] getVerticesArray() {
 
 		float[] arr = new float[vertices.size() * 8]; // vec3, vec3, vec2
 
@@ -60,6 +66,23 @@ public final class RawMesh {
 
 		return arr;
 
+	}
+
+
+	public List<Vertex> getVertices() {
+		return vertices;
+	}
+
+	public List<Integer> getIndices() {
+		return indices;
+	}
+
+	public String getMaterialName() {
+		return materialName;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }
