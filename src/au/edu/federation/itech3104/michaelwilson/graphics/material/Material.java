@@ -35,6 +35,7 @@ public class Material {
 
 	public Material(Material material) {
 		this.shaderProgram = material.shaderProgram;
+		this.isLightingSupported = material.isLightingSupported;
 
 		for (Map.Entry<String, MaterialAttribute> entry : material.attributes.entrySet())
 			attributes.put(entry.getKey(), entry.getValue().copy());
@@ -67,8 +68,12 @@ public class Material {
 		return this;
 	}
 
-	public Material addTexture(String name, Texture2D texture) {
-		textures.add(new TextureAttribute(name, texture));
+	public Material setTexture(String name, Texture2D texture) {
+		textures.removeIf(t -> t.getName() == name);
+
+		if (texture != null)
+			textures.add(new TextureAttribute(name, texture));
+
 		return this;
 	}
 

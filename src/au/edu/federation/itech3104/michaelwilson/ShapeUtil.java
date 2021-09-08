@@ -97,6 +97,23 @@ public final class ShapeUtil {
 	};
 	//@formatter:on
 
+	// @formatter:off
+	public static float[] getPlaneVertices(int tileU, int tileV) {
+		return new float[] {
+			// positions          // normals         // uvs
+			 0.5f,  0.0f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f * tileU, 1.0f * tileV,
+	         0.5f,  0.0f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f * tileU, 0.0f * tileV,
+	        -0.5f,  0.0f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f * tileU, 0.0f * tileV, 
+	        -0.5f,  0.0f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f * tileU, 1.0f * tileV
+		};
+	}
+	
+	public static final int[] PLANE_INDICES = {
+			0, 1, 3, 
+		    1, 2, 3  
+	};
+	//@formatter:on
+
 	private ShapeUtil() {
 	}
 
