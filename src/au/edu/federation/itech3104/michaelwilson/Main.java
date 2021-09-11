@@ -112,7 +112,8 @@ public class Main extends Engine {
 
 		Model tradeTent = new Model(rmTradeTent.toMeshes(resourceManager, matStandard, BufferUsageHint.STATIC_DRAW));
 		tradeTent.localMatrix.translate(1.5f, -0.62f, 0.5f);
-		tradeTent.localMatrix.scale(0.005f);
+		tradeTent.localMatrix.scale(0.005f); // TODO: Fix lighting normals when scaling model matrix. Need to scale model
+												// normals inversely.
 		tradeTent.updateGlobalMatrix();
 		tradeTent.setParent(root);
 
@@ -139,6 +140,25 @@ public class Main extends Engine {
 		// ShapeUtil#getPlaneVertices()
 		terrainMesh = resourceManager.addMesh("terrain", ShapeUtil.getPlaneVertices(10, 10), ShapeUtil.PLANE_INDICES, BufferUsageHint.STATIC_DRAW,
 				VertexBufferLayout.Float3_3_2, "grass");
+
+		// Load textures & materials for the fence model.
+		resourceManager.loadTexture("wood_fence_mt1_Diffuse", "./models/WoodenFence/textures/wood_fence_mt1_Diffuse.png");
+		resourceManager.loadTexture("wood_fence_mt1_Specular", "./models/WoodenFence/textures/wood_fence_mt1_Specular.png");
+
+		StandardMaterial matFence = matStandard.copy();
+		matFence.setDiffuseTexture(resourceManager.getTexture("wood_fence_mt1_Diffuse"));
+		matFence.setSpecularTexture(resourceManager.getTexture("wood_fence_mt1_Specular"));
+		resourceManager.addMaterial("wood_fence_t1_m", matFence);
+		
+		// Load the fence model.
+		RawModel rm = OBJLoader.INSTANCE.loadModel("./models/WoodenFence/obj/wood_fence_m1_t1_tri.obj");
+
+		ModelMesh fence = new ModelMesh(rm.toMeshes(resourceManager, matStandard, BufferUsageHint.STATIC_DRAW).get(0));
+		fence.localMatrix.rotateAboutLocalAxisDegs(-90, new Vec3f(1, 0, 0));
+		fence.localMatrix.translate(0, 0, -0.6f);
+		fence.localMatrix.scale(1f / 800f);
+		fence.setParent(root);
+
 	}
 
 	@Override

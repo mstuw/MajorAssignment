@@ -12,6 +12,7 @@ import au.edu.federation.itech3104.michaelwilson.graphics.ShaderProgram;
 import au.edu.federation.itech3104.michaelwilson.graphics.material.Material;
 import au.edu.federation.itech3104.michaelwilson.graphics.material.MaterialAttribute;
 import au.edu.federation.itech3104.michaelwilson.graphics.material.TextureAttribute;
+import au.edu.federation.itech3104.michaelwilson.math.Mat3f;
 import au.edu.federation.itech3104.michaelwilson.math.Mat4f;
 
 /**
@@ -87,8 +88,27 @@ public class BasicRenderer implements IRenderer {
 
 				// Inversing is expensive, so only set the uniform if the shader supports
 				// lighting.
-				if (material.isLightingSupported())
-					shader.setUniform("modelNormal", Mat4f.inverse(modelMatrix).transpose().toMat3f());
+				if (material.isLightingSupported()) {
+					Mat4f normalizedMatrix = new Mat4f(modelMatrix); // Remove the scaling from the model matrix, so we can inverse without breaking
+																		// lighting normals.
+
+					float x = modelMatrix.getXBasis().length();
+					normalizedMatrix.m00 /= x;
+					normalizedMatrix.m01 /= x;
+					normalizedMatrix.m02 /= x;
+
+					float y = modelMatrix.getYBasis().length();
+					normalizedMatrix.m10 /= y;
+					normalizedMatrix.m11 /= y;
+					normalizedMatrix.m12 /= y;
+
+					float z = modelMatrix.getZBasis().length();
+					normalizedMatrix.m20 /= z;
+					normalizedMatrix.m21 /= z;
+					normalizedMatrix.m22 /= z;
+
+					shader.setUniform("modelNormal", Mat4f.inverse(normalizedMatrix).transpose().toMat3f());
+				}
 
 				// Draw the actual object.
 				drawable.draw(this);
@@ -100,7 +120,7 @@ public class BasicRenderer implements IRenderer {
 				}
 			}
 			shader.unbind();
-			
+
 		} else {
 			drawable.draw(this);
 		}

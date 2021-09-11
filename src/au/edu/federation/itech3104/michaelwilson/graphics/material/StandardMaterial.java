@@ -32,15 +32,19 @@ public class StandardMaterial extends Material {
 		addAttribute("material.shininess", shininess);
 	}
 
-	// TODO: Since texture unit is set by the texture list order. Setting specular before diffuse could break the shader.
-	public void setDiffuseTexture(Texture2D texture) {
-		diffuseTexture = texture;
-		setTexture("material.diffuse", texture);
+	public void setTexture(Texture2D diffuse, Texture2D specular) {
+		diffuseTexture = diffuse;
+		specularTexture = specular;
+		setTexture("material.diffuse", diffuse);
+		setTexture("material.specular", specular);
 	}
 
-	public void setSpecularTexture(Texture2D texture) {
-		diffuseTexture = texture;
-		setTexture("material.specular", texture);
+	public void setDiffuseTexture(Texture2D diffuse) {
+		setTexture(diffuse, getSpecularTexture());
+	}
+
+	public void setSpecularTexture(Texture2D specular) {
+		setTexture(getDiffuseTexture(), specular);
 	}
 
 	public float getShininess() {

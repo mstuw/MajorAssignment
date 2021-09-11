@@ -1,0 +1,6 @@
+
+Wooden Fence 3D Model from turbosquid.com
+
+https://www.turbosquid.com/3d-models/wooden-fence-old-wood-3d-model-1317167
+
+- Converted models into triangulated versions & removed MTL files.

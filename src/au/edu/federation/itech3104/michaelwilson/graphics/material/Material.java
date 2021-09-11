@@ -69,7 +69,8 @@ public class Material {
 	}
 
 	public Material setTexture(String name, Texture2D texture) {
-		textures.removeIf(t -> t.getName() == name);
+		textures.removeIf(t -> t.getName() == name); // Make list act like a Map<String, Texture2D>, replacing any item with the same
+														// key. Not using a Map since a list data type is more beneficial in the renderer.
 
 		if (texture != null)
 			textures.add(new TextureAttribute(name, texture));
