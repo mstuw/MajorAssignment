@@ -155,9 +155,9 @@ public abstract class Engine implements IDisposable, AutoCloseable {
 			lastTime = glfwGetTime();
 
 			update(deltaTime);
-			draw(renderer);
+			draw(renderer); 
 
-			renderer.renderTree(root);
+			renderer.renderTree(root); // render the scene graph.
 
 			glfwSwapBuffers(windowHandle);
 			glfwPollEvents();

@@ -36,7 +36,7 @@ public class BasicRenderer implements IRenderer {
 		if (lightingTracker == null && transform instanceof ILightingTracker)
 			lightingTracker = (ILightingTracker) transform;
 
-		if (transform instanceof IDrawable)
+		if (transform instanceof IDrawable) // Render the provided object if it supports it.
 			render((IDrawable) transform, transform.getGlobalMatrix());
 
 		for (Transform child : transform)
@@ -73,11 +73,11 @@ public class BasicRenderer implements IRenderer {
 
 					List<ILight> lights = lightingTracker.getLights();
 					for (ILight light : lights) {
-						// A separate index for each lighting type. (e.g. point, directional, and spot
+						// A separate index group for each lighting type. (e.g. point, directional, and spot
 						// light indices)
 						int index = lightIndices.getOrDefault(light.getTypeName(), 0);
 
-						light.apply(index, shader);
+						light.apply(index, shader); //  index - the light array element to use in the shader
 
 						lightIndices.put(light.getTypeName(), index + 1);
 					}
@@ -89,8 +89,9 @@ public class BasicRenderer implements IRenderer {
 				// Inversing is expensive, so only set the uniform if the shader supports
 				// lighting.
 				if (material.isLightingSupported()) {
-					Mat4f normalizedMatrix = new Mat4f(modelMatrix); // Remove the scaling from the model matrix, so we can inverse without breaking
-																		// lighting normals.
+					// Remove the scaling from the model matrix, so we can inverse without breaking
+					// lighting normals.
+					Mat4f normalizedMatrix = new Mat4f(modelMatrix);
 
 					float x = modelMatrix.getXBasis().length();
 					normalizedMatrix.m00 /= x;
@@ -122,7 +123,7 @@ public class BasicRenderer implements IRenderer {
 			shader.unbind();
 
 		} else {
-			drawable.draw(this);
+			drawable.draw(this); // the object has no material so just draw it without shaders/lighting/textures.
 		}
 	}
 
