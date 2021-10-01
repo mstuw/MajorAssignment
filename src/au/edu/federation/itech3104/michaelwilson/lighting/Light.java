@@ -17,6 +17,8 @@ public abstract class Light extends Transform implements ILight {
 	private final Vec3f diffuse;
 	private final Vec3f specular;
 
+	private boolean enabled = true;
+
 	public Light(Vec3f ambient, Vec3f diffuse, Vec3f specular) {
 		this.ambient = ambient;
 		this.diffuse = diffuse;
@@ -30,7 +32,7 @@ public abstract class Light extends Transform implements ILight {
 		// The GLSL struct array with indexer (e.g. pointLights[2])
 		String elementName = String.format("%s[%d]", getTypeName(), index);
 
-		shader.setUniform(join(elementName, "enabled"), true);
+		shader.setUniform(join(elementName, "enabled"), enabled);
 
 		shader.setUniform(join(elementName, "ambient"), ambient);
 		shader.setUniform(join(elementName, "diffuse"), diffuse);
@@ -55,6 +57,14 @@ public abstract class Light extends Transform implements ILight {
 
 	public Vec3f getSpecular() {
 		return specular;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }

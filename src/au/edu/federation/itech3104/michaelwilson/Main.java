@@ -1,5 +1,10 @@
 package au.edu.federation.itech3104.michaelwilson;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_L;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.glfwGetKey;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -8,11 +13,9 @@ import au.edu.federation.itech3104.michaelwilson.camera.PerspectiveCamera;
 import au.edu.federation.itech3104.michaelwilson.graphics.Mesh;
 import au.edu.federation.itech3104.michaelwilson.graphics.data.BufferUsageHint;
 import au.edu.federation.itech3104.michaelwilson.graphics.data.VertexBufferLayout;
-import au.edu.federation.itech3104.michaelwilson.graphics.material.Material;
 import au.edu.federation.itech3104.michaelwilson.graphics.material.StandardMaterial;
 import au.edu.federation.itech3104.michaelwilson.graphics.renderer.BasicRenderer;
 import au.edu.federation.itech3104.michaelwilson.graphics.renderer.IDrawableRenderer;
-import au.edu.federation.itech3104.michaelwilson.graphics.texture.WrapMode;
 import au.edu.federation.itech3104.michaelwilson.lighting.DirectionalLight;
 import au.edu.federation.itech3104.michaelwilson.lighting.SpotLight;
 import au.edu.federation.itech3104.michaelwilson.math.Mat4f;
@@ -24,7 +27,7 @@ import au.edu.federation.itech3104.michaelwilson.model.loader.RawModel;
 
 public class Main extends Engine {
 
-	private static final String WINDOW_TITLE = "Major Assignment";
+	private static final String WINDOW_TITLE = "ITECH3104 - Major Assignment - Michael Wilson";
 	private static final int WINDOW_WIDTH = 900;
 	private static final int WINDOW_HEIGHT = WINDOW_WIDTH / 16 * 10; // 16:10 aspect ratio
 
@@ -46,6 +49,8 @@ public class Main extends Engine {
 
 	private SpotLight spotLight;
 
+	private boolean torchKeyPressed = false;
+
 	public Main() {
 		super(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, new PerspectiveCamera(FOV, NEAR_Z, FAR_Z), new BasicRenderer(null));
 		cameraController = new CameraController(camera);
@@ -55,12 +60,8 @@ public class Main extends Engine {
 	protected void initResources() throws IOException {
 		// Shaders
 		resourceManager.loadShader("standard", "./shaders/standard.vs", "./shaders/standard.fs");
-		// resourceManager.loadShader("light_source", "./shaders/light_cube.vs",
-		// "./shaders/light_cube.fs");
 
 		// Textures (name -> filepath)
-		resourceManager.loadTexture("container2", "./images/container2.png");
-		resourceManager.loadTexture("container2_specular", "./images/container2_specular.png");
 		resourceManager.loadTexture("grass", "./images/grass.png");
 
 		// Windmill model textures
@@ -74,8 +75,7 @@ public class Main extends Engine {
 
 		// Materials
 		StandardMaterial matStandard = new StandardMaterial(resourceManager.getShader("standard"));
-		matStandard.setDiffuseTexture(resourceManager.getTexture("container2"));
-		matStandard.setSpecularTexture(resourceManager.getTexture("container2_specular"));
+		matStandard.setDiffuseTexture(resourceManager.getTexture("grass"));
 		matStandard.setShininess(64.0f);
 		resourceManager.addMaterial("standard", matStandard); // Load material object into resource manager so we can access it elsewhere
 
@@ -112,8 +112,7 @@ public class Main extends Engine {
 
 		Model tradeTent = new Model(rmTradeTent.toMeshes(resourceManager, matStandard, BufferUsageHint.STATIC_DRAW));
 		tradeTent.localMatrix.translate(1.5f, -0.62f, 0.5f);
-		tradeTent.localMatrix.scale(0.005f); // TODO: Fix lighting normals when scaling model matrix. Need to scale model
-												// normals inversely.
+		tradeTent.localMatrix.scale(0.005f);
 		tradeTent.updateGlobalMatrix();
 		tradeTent.setParent(root);
 
@@ -149,7 +148,7 @@ public class Main extends Engine {
 		matFence.setDiffuseTexture(resourceManager.getTexture("wood_fence_mt1_Diffuse"));
 		matFence.setSpecularTexture(resourceManager.getTexture("wood_fence_mt1_Specular"));
 		resourceManager.addMaterial("wood_fence_t1_m", matFence);
-		
+
 		// Load the fence model.
 		RawModel rm = OBJLoader.INSTANCE.loadModel("./models/WoodenFence/obj/wood_fence_m1_t1_tri.obj");
 
@@ -165,7 +164,14 @@ public class Main extends Engine {
 	protected void initScene() {
 		camera.getPosition().set(0, 0, 3);
 
+		// setup the lights.
 		new DirectionalLight(new Vec3f(-0.2f, -1.0f, -0.3f), new Vec3f(0.5f), new Vec3f(0.4f), new Vec3f(0.9f)).setParent(root);
+
+		SpotLight windmillLight = new SpotLight(new Vec3f(-0.207f, 0.515f, -0.832f), new Vec3f(0.2f, 0, 0), new Vec3f(0.6f, 0, 0), new Vec3f(0.2f),
+				1.0f, 0.09f, 0.032f, (float) Math.cos(Math.toRadians(12f)), (float) Math.cos(Math.toRadians(20.0f)));
+		windmillLight.localMatrix.setOrigin(new Vec3f(-.116f, -.028f, 2.781f));
+		windmillLight.updateGlobalMatrix();
+		windmillLight.setParent(root);
 
 		// Move & scale the windmill object.
 		windmill.localMatrix.scale(0.2f);
@@ -177,14 +183,20 @@ public class Main extends Engine {
 
 		// Create a spot light.
 		spotLight = new SpotLight(camera.getFront().normalised(), new Vec3f(0.0f), new Vec3f(0.5f), new Vec3f(0.2f), 1.0f, 0.09f, 0.032f,
-				(float) Math.cos(Math.toRadians(12.5f)), (float) Math.cos(Math.toRadians(15.0f)));
+				(float) Math.cos(Math.toRadians(12f)), (float) Math.cos(Math.toRadians(20.0f)));
 		spotLight.setParent(root);
-
 	}
 
 	@Override
 	protected void update(float deltaTime) {
 		cameraController.update(windowHandle, deltaTime);
+
+		if (!torchKeyPressed && glfwGetKey(windowHandle, GLFW_KEY_L) == GLFW_PRESS) {
+			torchKeyPressed = true;
+			spotLight.setEnabled(!spotLight.isEnabled());
+		} else if (torchKeyPressed && glfwGetKey(windowHandle, GLFW_KEY_L) == GLFW_RELEASE) {
+			torchKeyPressed = false;
+		}
 
 		// Rotate the blades.
 		windmill_blades.localMatrix.translate(0, 6.59f, 0);
